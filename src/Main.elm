@@ -119,7 +119,7 @@ viewHome rentalImageStates =
       ]
   , div [ class "rentals" ]
       [ ul [ class "results" ] <|
-          List.indexedMap (\i isLarge -> li [] [ viewRental i isLarge ]) rentalImageStates
+          List.indexedMap (\i isLarge -> li [] [ viewRental i isLarge defaultRental ]) rentalImageStates
       ]
   ]
 
@@ -185,46 +185,85 @@ viewNavBar =
     ]
 
 
-viewRental : Int -> Bool -> Html Msg
-viewRental index isLarge =
+-- RENTAL
+
+
+type alias Rental =
+  { title : String
+  , owner : String
+  , city : String
+  , location : Location
+  , category : String
+  , kind : String
+  , bedrooms : Int
+  , image : String
+  , description : String
+  }
+
+
+type alias Location =
+  { lat : Float
+  , lng : Float
+  }
+
+
+defaultRental : Rental
+defaultRental =
+  { title = "Grand Old Mansion"
+  , owner = "Veruca Salt"
+  , city = "San Francisco"
+  , location =
+      { lat = 37.7749
+      , lng = -122.4194
+      }
+  , category = "Estate"
+  , kind = "Standalone"
+  , bedrooms = 15
+  , image = "https://upload.wikimedia.org/wikipedia/commons/c/cb/Crane_estate_(5).jpg"
+  , description = "This grand old mansion sits on over 100 acres of rolling hills and dense redwood forests."
+  }
+
+
+viewRental : Int -> Bool -> Rental -> Html Msg
+viewRental index isLarge rental =
   article [ class "rental" ]
     [ viewRentalImage
         index
         isLarge
-        [ src "https://upload.wikimedia.org/wikipedia/commons/c/cb/Crane_estate_(5).jpg"
-        , alt "A picture of Grand Old Mansion"
+        [ src rental.image
+        , alt ("A picture of " ++ rental.title)
         ]
     , div [ class "details" ]
-        [ h3 [] [ text "Grand Old Mansion" ]
+        [ h3 [] [ text rental.title ]
         , div [ class "detail owner" ]
             [ span [] [ text "Owner:" ]
             , text " "
-            , text "Veruca Salt"
+            , text rental.owner
             ]
         , div [ class "detail type" ]
             [ span [] [ text "Type:" ]
             , text " "
-            , text "Standalone"
+            , text rental.kind
             ]
         , div [ class "detail location" ]
             [ span [] [ text "Location:" ]
             , text " "
-            , text "San Francisco"
+            , text rental.city
             ]
         , div [ class "detail bedrooms" ]
             [ span [] [ text "Number of bedrooms:" ]
             , text " "
-            , text "15"
+            , text (String.fromInt rental.bedrooms)
             ]
         ]
     , viewMap
-        { lat = "37.7749"
-        , lng = "-122.4194"
-        , zoom = "9"
+        { lat = rental.location.lat
+        , lng = rental.location.lng
+        , zoom = 9
         , width = 150
         , height = 150
         }
-        [ alt "A map of Grand Old Mansion" ]
+        [ alt ("A map of " ++ rental.title) ]
     ]
 
 
@@ -248,9 +287,9 @@ viewRentalImage index isLarge attrs =
 
 
 type alias MapConfig =
-  { lat : String
-  , lng : String
-  , zoom : String
+  { lat : Float
+  , lng : Float
+  , zoom : Int
   , width : Int
   , height : Int
   }
@@ -260,18 +299,24 @@ viewMap : MapConfig -> List (Attribute msg) -> Html msg
 viewMap config attrs =
   let
     preAttrs =
-      [ alt ("Map image at coordinates " ++ config.lat ++ "," ++ config.lng)
+      [ alt <|
+          String.join ""
+            [ "Map image at coordinates "
+            , String.fromFloat config.lat
+            , ","
+            , String.fromFloat config.lng
+            ]
       ]
 
     postAttrs =
       [ src <|
           String.join ""
             [ "https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/"
-            , config.lng
+            , String.fromFloat config.lng
             , ","
-            , config.lat
+            , String.fromFloat config.lat
             , ","
-            , config.zoom
+            , String.fromInt config.zoom
             , "/"
             , String.fromInt config.width
             , "x"

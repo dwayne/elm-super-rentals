@@ -28,12 +28,13 @@ main =
 type alias Model =
   { url : Url.Url
   , key : Nav.Key
+  , rentalImageStates : List Bool
   }
 
 
 init : () -> Url.Url -> Nav.Key -> (Model, Cmd msg)
 init _ url key =
-  ( Model url key
+  ( Model url key [ False, False, False ]
   , Cmd.none
   )
 
@@ -73,18 +74,18 @@ update msg model =
 view : Model -> Browser.Document msg
 view model =
   { title = "Super Rentals"
-  , body = [ viewApplication model.url ]
+  , body = [ viewApplication model.url model.rentalImageStates ]
   }
 
 
-viewApplication : Url.Url -> Html msg
-viewApplication url =
+viewApplication : Url.Url -> List Bool -> Html msg
+viewApplication url rentalImageStates =
   div [ class "container" ]
     [ viewNavBar
     , div [ class "body" ] <|
         case Route.fromUrl url of
           Home ->
-            viewHome
+            viewHome rentalImageStates
 
           About ->
             viewAbout
@@ -97,19 +98,16 @@ viewApplication url =
     ]
 
 
-viewHome : List (Html msg)
-viewHome =
+viewHome : List Bool -> List (Html msg)
+viewHome rentalImageStates =
   [ viewJumbo
       [ h2 [] [ text "Welcome to Super Rentals!" ]
       , p [] [ text "We hope you find exactly what you're looking for in a place to stay." ]
       , a [ href "/about", class "button" ] [ text "About Us" ]
       ]
   , div [ class "rentals" ]
-      [ ul [ class "results" ]
-          [ li [] [ viewRental ]
-          , li [] [ viewRental ]
-          , li [] [ viewRental ]
-          ]
+      [ ul [ class "results" ] <|
+          List.map (\isLarge -> li [] [ viewRental isLarge ]) rentalImageStates
       ]
   ]
 
@@ -175,11 +173,11 @@ viewNavBar =
     ]
 
 
-viewRental : Html msg
-viewRental =
+viewRental : Bool -> Html msg
+viewRental isLarge =
   article [ class "rental" ]
     [ viewRentalImage
-        False
+        isLarge
         [ src "https://upload.wikimedia.org/wikipedia/commons/c/cb/Crane_estate_(5).jpg"
         , alt "A picture of Grand Old Mansion"
         ]

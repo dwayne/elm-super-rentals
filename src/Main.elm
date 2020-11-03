@@ -5,6 +5,7 @@ import Browser
 import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import Url
 
 import Route exposing (Route(..))
@@ -45,6 +46,7 @@ init _ url key =
 type Msg
   = ClickedLink Browser.UrlRequest
   | ChangedUrl Url.Url
+  | ClickedToggleSize Int Bool
 
 
 update : Msg -> Model -> (Model, Cmd msg)
@@ -67,18 +69,28 @@ update msg model =
       , Cmd.none
       )
 
+    ClickedToggleSize i isLarge ->
+      ( { model
+        | rentalImageStates =
+            List.indexedMap
+              (\j prev -> if i == j then isLarge else prev)
+              model.rentalImageStates
+        }
+      , Cmd.none
+      )
+
 
 -- VIEW
 
 
-view : Model -> Browser.Document msg
+view : Model -> Browser.Document Msg
 view model =
   { title = "Super Rentals"
   , body = [ viewApplication model.url model.rentalImageStates ]
   }
 
 
-viewApplication : Url.Url -> List Bool -> Html msg
+viewApplication : Url.Url -> List Bool -> Html Msg
 viewApplication url rentalImageStates =
   div [ class "container" ]
     [ viewNavBar
@@ -98,7 +110,7 @@ viewApplication url rentalImageStates =
     ]
 
 
-viewHome : List Bool -> List (Html msg)
+viewHome : List Bool -> List (Html Msg)
 viewHome rentalImageStates =
   [ viewJumbo
       [ h2 [] [ text "Welcome to Super Rentals!" ]
@@ -107,7 +119,7 @@ viewHome rentalImageStates =
       ]
   , div [ class "rentals" ]
       [ ul [ class "results" ] <|
-          List.map (\isLarge -> li [] [ viewRental isLarge ]) rentalImageStates
+          List.indexedMap (\i isLarge -> li [] [ viewRental i isLarge ]) rentalImageStates
       ]
   ]
 
@@ -173,10 +185,11 @@ viewNavBar =
     ]
 
 
-viewRental : Bool -> Html msg
-viewRental isLarge =
+viewRental : Int -> Bool -> Html Msg
+viewRental index isLarge =
   article [ class "rental" ]
     [ viewRentalImage
+        index
         isLarge
         [ src "https://upload.wikimedia.org/wikipedia/commons/c/cb/Crane_estate_(5).jpg"
         , alt "A picture of Grand Old Mansion"
@@ -207,16 +220,16 @@ viewRental isLarge =
     ]
 
 
-viewRentalImage : Bool -> List (Attribute msg) -> Html msg
-viewRentalImage isLarge attrs =
+viewRentalImage : Int -> Bool -> List (Attribute Msg) -> Html Msg
+viewRentalImage index isLarge attrs =
   if isLarge then
-    div [ class "image large" ]
+    button [ class "image large", onClick (ClickedToggleSize index False) ]
       [ img attrs
           []
       , small [] [ text "View Smaller" ]
       ]
   else
-    div [ class "image" ]
+    button [ class "image", onClick (ClickedToggleSize index True) ]
       [ img attrs
           []
       , small [] [ text "View Larger" ]

@@ -6,6 +6,8 @@ import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Http
+import Json.Decode as D exposing (Decoder)
 import Url
 
 import Route exposing (Route(..))
@@ -33,10 +35,10 @@ type alias Model =
   }
 
 
-init : () -> Url.Url -> Nav.Key -> (Model, Cmd msg)
+init : () -> Url.Url -> Nav.Key -> (Model, Cmd Msg)
 init _ url key =
   ( Model url key [ False, False, False ]
-  , Cmd.none
+  , fetchRentals
   )
 
 
@@ -47,6 +49,7 @@ type Msg
   = ClickedLink Browser.UrlRequest
   | ChangedUrl Url.Url
   | ClickedToggleSize Int Bool
+  | GotRentals (Result Http.Error (List Rental))
 
 
 update : Msg -> Model -> (Model, Cmd msg)
@@ -76,6 +79,16 @@ update msg model =
               (\j prev -> if i == j then isLarge else prev)
               model.rentalImageStates
         }
+      , Cmd.none
+      )
+
+    GotRentals (Ok rentals) ->
+      ( Debug.log ("Got rentals: " ++ Debug.toString rentals) model
+      , Cmd.none
+      )
+
+    GotRentals (Err e) ->
+      ( Debug.log ("Got error: " ++ Debug.toString e) model
       , Cmd.none
       )
 
@@ -336,3 +349,81 @@ viewMap config attrs =
 mapBoxAccessToken : String
 mapBoxAccessToken =
   "pk.eyJ1IjoiZHdheW5lY3Jvb2tzIiwiYSI6ImNraDJlNmJ3cjA0OHEycnFkbjBsY2owbHMifQ.oMp9oQxaoLK0C4aSFwKEjw"
+
+
+-- API
+
+
+fetchRentals : Cmd Msg
+fetchRentals =
+  Http.get
+    { url = "http://localhost:8000/api/rentals.json"
+    , expect = Http.expectJson GotRentals rentalsDecoder
+    }
+
+
+rentalsDecoder : Decoder (List Rental)
+rentalsDecoder =
+  D.field "data" (D.list rentalDecoder)
+
+
+rentalDecoder : Decoder Rental
+rentalDecoder =
+  D.map
+    (\partialRental ->
+      { title = partialRental.title
+      , owner = partialRental.owner
+      , city = partialRental.city
+      , location = partialRental.location
+      , category = partialRental.category
+      , kind =
+          case partialRental.category of
+            "Condo" ->
+              "Community"
+
+            "Townhouse" ->
+              "Community"
+
+            "Apartment" ->
+              "Community"
+
+            _ ->
+              "Standalone"
+      , bedrooms = partialRental.bedrooms
+      , image = partialRental.image
+      , description = partialRental.description
+      })
+    partialRentalDecoder
+
+
+type alias PartialRental =
+  { title : String
+  , owner : String
+  , city : String
+  , location : Location
+  , category : String
+  , bedrooms : Int
+  , image : String
+  , description : String
+  }
+
+
+partialRentalDecoder : Decoder PartialRental
+partialRentalDecoder =
+  D.field "attributes" <|
+    D.map8 PartialRental
+      (D.field "title" D.string)
+      (D.field "owner" D.string)
+      (D.field "city" D.string)
+      (D.field "location" locationDecoder)
+      (D.field "category" D.string)
+      (D.field "bedrooms" D.int)
+      (D.field "image" D.string)
+      (D.field "description" D.string)
+
+
+locationDecoder : Decoder Location
+locationDecoder =
+  D.map2 Location
+    (D.field "lat" D.float)
+    (D.field "lng" D.float)

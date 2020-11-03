@@ -31,13 +31,13 @@ main =
 type alias Model =
   { url : Url.Url
   , key : Nav.Key
-  , rentalImageStates : List Bool
+  , rentals : List (Bool, Rental)
   }
 
 
 init : () -> Url.Url -> Nav.Key -> (Model, Cmd Msg)
 init _ url key =
-  ( Model url key [ False, False, False ]
+  ( Model url key []
   , fetchRentals
   )
 
@@ -74,16 +74,20 @@ update msg model =
 
     ClickedToggleSize i isLarge ->
       ( { model
-        | rentalImageStates =
+        | rentals =
             List.indexedMap
-              (\j prev -> if i == j then isLarge else prev)
-              model.rentalImageStates
+              (\j (current, rental) ->
+                if i == j then
+                  (isLarge, rental)
+                else
+                  (current, rental))
+              model.rentals
         }
       , Cmd.none
       )
 
     GotRentals (Ok rentals) ->
-      ( Debug.log ("Got rentals: " ++ Debug.toString rentals) model
+      ( { model | rentals = List.map (\rental -> (False, rental)) rentals }
       , Cmd.none
       )
 
@@ -99,18 +103,18 @@ update msg model =
 view : Model -> Browser.Document Msg
 view model =
   { title = "Super Rentals"
-  , body = [ viewApplication model.url model.rentalImageStates ]
+  , body = [ viewApplication model.url model.rentals ]
   }
 
 
-viewApplication : Url.Url -> List Bool -> Html Msg
-viewApplication url rentalImageStates =
+viewApplication : Url.Url -> List (Bool, Rental) -> Html Msg
+viewApplication url rentals =
   div [ class "container" ]
     [ viewNavBar
     , div [ class "body" ] <|
         case Route.fromUrl url of
           Home ->
-            viewHome rentalImageStates
+            viewHome rentals
 
           About ->
             viewAbout
@@ -123,8 +127,8 @@ viewApplication url rentalImageStates =
     ]
 
 
-viewHome : List Bool -> List (Html Msg)
-viewHome rentalImageStates =
+viewHome : List (Bool, Rental) -> List (Html Msg)
+viewHome rentals =
   [ viewJumbo
       [ h2 [] [ text "Welcome to Super Rentals!" ]
       , p [] [ text "We hope you find exactly what you're looking for in a place to stay." ]
@@ -132,7 +136,10 @@ viewHome rentalImageStates =
       ]
   , div [ class "rentals" ]
       [ ul [ class "results" ] <|
-          List.indexedMap (\i isLarge -> li [] [ viewRental i isLarge defaultRental ]) rentalImageStates
+          List.indexedMap
+            (\i (isLarge, rental) ->
+              li [] [ viewRental i isLarge rental ])
+            rentals
       ]
   ]
 
@@ -217,23 +224,6 @@ type alias Rental =
 type alias Location =
   { lat : Float
   , lng : Float
-  }
-
-
-defaultRental : Rental
-defaultRental =
-  { title = "Grand Old Mansion"
-  , owner = "Veruca Salt"
-  , city = "San Francisco"
-  , location =
-      { lat = 37.7749
-      , lng = -122.4194
-      }
-  , category = "Estate"
-  , kind = "Standalone"
-  , bedrooms = 15
-  , image = "https://upload.wikimedia.org/wikipedia/commons/c/cb/Crane_estate_(5).jpg"
-  , description = "This grand old mansion sits on over 100 acres of rolling hills and dense redwood forests."
   }
 
 

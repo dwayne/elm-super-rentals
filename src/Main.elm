@@ -178,7 +178,11 @@ viewNavBar =
 viewRental : Html msg
 viewRental =
   article [ class "rental" ]
-    [ div [ class "details" ]
+    [ viewRentalImage
+        [ src "https://upload.wikimedia.org/wikipedia/commons/c/cb/Crane_estate_(5).jpg"
+        , alt "A picture of Grand Old Mansion"
+        ]
+    , div [ class "details" ]
         [ h3 [] [ text "Grand Old Mansion" ]
         , div [ class "detail owner" ]
             [ span [] [ text "Owner:" ]
@@ -201,4 +205,12 @@ viewRental =
             , text "15"
             ]
         ]
+    ]
+
+
+viewRentalImage : List (Attribute msg) -> Html msg
+viewRentalImage attrs =
+  div [ class "image" ]
+    [ img attrs
+        []
     ]

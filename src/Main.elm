@@ -179,6 +179,7 @@ viewRental : Html msg
 viewRental =
   article [ class "rental" ]
     [ viewRentalImage
+        False
         [ src "https://upload.wikimedia.org/wikipedia/commons/c/cb/Crane_estate_(5).jpg"
         , alt "A picture of Grand Old Mansion"
         ]
@@ -208,9 +209,17 @@ viewRental =
     ]
 
 
-viewRentalImage : List (Attribute msg) -> Html msg
-viewRentalImage attrs =
-  div [ class "image" ]
-    [ img attrs
-        []
-    ]
+viewRentalImage : Bool -> List (Attribute msg) -> Html msg
+viewRentalImage isLarge attrs =
+  if isLarge then
+    div [ class "image large" ]
+      [ img attrs
+          []
+      , small [] [ text "View Smaller" ]
+      ]
+  else
+    div [ class "image" ]
+      [ img attrs
+          []
+      , small [] [ text "View Larger" ]
+      ]

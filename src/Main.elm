@@ -73,75 +73,76 @@ update msg model =
 view : Model -> Browser.Document msg
 view model =
   { title = "Super Rentals"
-  , body =
-      case Route.fromUrl model.url of
-          Home ->
-            viewHome
-
-          About ->
-            viewAbout
-
-          Contact ->
-            viewContact
-
-          NotFound ->
-            viewNotFound
+  , body = [ viewApplication model.url ]
   }
 
 
-viewHome : List (Html msg)
+viewApplication : Url.Url -> Html msg
+viewApplication url =
+  div [ class "container" ]
+    [ viewNavBar
+    , div [ class "body" ]
+        [ case Route.fromUrl url of
+            Home ->
+              viewHome
+
+            About ->
+              viewAbout
+
+            Contact ->
+              viewContact
+
+            NotFound ->
+              viewNotFound
+        ]
+    ]
+
+
+viewHome : Html msg
 viewHome =
-  [ viewNavBar
-  , viewJumbo
-      [ h2 [] [ text "Welcome to Super Rentals!" ]
-      , p [] [ text "We hope you find exactly what you're looking for in a place to stay." ]
-      , a [ href "/about", class "button" ] [ text "About Us" ]
-      ]
-  ]
+  viewJumbo
+    [ h2 [] [ text "Welcome to Super Rentals!" ]
+    , p [] [ text "We hope you find exactly what you're looking for in a place to stay." ]
+    , a [ href "/about", class "button" ] [ text "About Us" ]
+    ]
 
 
-viewAbout : List (Html msg)
+viewAbout : Html msg
 viewAbout =
-  [ viewNavBar
-  , viewJumbo
-      [ h2 [] [ text "About Super Rentals" ]
-      , p [] [ text "The Super Rentals website is a delightful project created to explore Ember. By building a property rental site, we can simultaneously imagine traveling AND building Ember applications." ]
-      , a [ href "/getting-in-touch", class "button" ] [ text "Contact Us" ]
-      ]
-  ]
+  viewJumbo
+    [ h2 [] [ text "About Super Rentals" ]
+    , p [] [ text "The Super Rentals website is a delightful project created to explore Ember. By building a property rental site, we can simultaneously imagine traveling AND building Ember applications." ]
+    , a [ href "/getting-in-touch", class "button" ] [ text "Contact Us" ]
+    ]
 
 
-viewContact : List (Html msg)
+viewContact : Html msg
 viewContact =
-  [ viewNavBar
-  , viewJumbo
-      [ h2 [] [ text "Contact Us" ]
-      , p []
-          [ text "Super Rentals Representatives would love to help you"
-          , br [] []
-          , text "choose a destination or answer any questions you may have."
-          ]
-      , address []
-          [ text "Super Rentals HQ"
-          , p []
-              [ text "1212 Test Address Avenue"
-              , br [] []
-              , text "Testington, OR 97233"
-              ]
-          , a [ href "tel:503.555.1212" ] [ text "+1 (503) 555-1212" ]
-          , br [] []
-          , a [ href "mailto:superrentalsrep@emberjs.com" ] [ text "superrentalsrep@emberjs.com" ]
-          ]
-      , a [ href "/about", class "button" ] [ text "About" ]
-      ]
-  ]
+  viewJumbo
+    [ h2 [] [ text "Contact Us" ]
+    , p []
+        [ text "Super Rentals Representatives would love to help you"
+        , br [] []
+        , text "choose a destination or answer any questions you may have."
+        ]
+    , address []
+        [ text "Super Rentals HQ"
+        , p []
+            [ text "1212 Test Address Avenue"
+            , br [] []
+            , text "Testington, OR 97233"
+            ]
+        , a [ href "tel:503.555.1212" ] [ text "+1 (503) 555-1212" ]
+        , br [] []
+        , a [ href "mailto:superrentalsrep@emberjs.com" ] [ text "superrentalsrep@emberjs.com" ]
+        ]
+    , a [ href "/about", class "button" ] [ text "About" ]
+    ]
 
 
-viewNotFound : List (Html msg)
+viewNotFound : Html msg
 viewNotFound =
-  [ viewNavBar
-  , text "Not found"
-  ]
+  text "Not found"
 
 
 viewJumbo : List (Html msg) -> Html msg

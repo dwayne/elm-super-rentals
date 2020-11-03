@@ -217,6 +217,14 @@ viewRental index isLarge =
             , text "15"
             ]
         ]
+    , viewMap
+        { lat = "37.7749"
+        , lng = "-122.4194"
+        , zoom = "9"
+        , width = 150
+        , height = 150
+        }
+        [ alt "A map of Grand Old Mansion" ]
     ]
 
 
@@ -234,3 +242,52 @@ viewRentalImage index isLarge attrs =
           []
       , small [] [ text "View Larger" ]
       ]
+
+
+-- MAP
+
+
+type alias MapConfig =
+  { lat : String
+  , lng : String
+  , zoom : String
+  , width : Int
+  , height : Int
+  }
+
+
+viewMap : MapConfig -> List (Attribute msg) -> Html msg
+viewMap config attrs =
+  let
+    preAttrs =
+      [ alt ("Map image at coordinates " ++ config.lat ++ "," ++ config.lng)
+      ]
+
+    postAttrs =
+      [ src <|
+          String.join ""
+            [ "https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/"
+            , config.lng
+            , ","
+            , config.lat
+            , ","
+            , config.zoom
+            , "/"
+            , String.fromInt config.width
+            , "x"
+            , String.fromInt config.height
+            , "@2x?access_token="
+            , mapBoxAccessToken
+            ]
+      , width config.width
+      , height config.height
+      ]
+  in
+    div [ class "map" ]
+      [ img (preAttrs ++ attrs ++ postAttrs) []
+      ]
+
+
+mapBoxAccessToken : String
+mapBoxAccessToken =
+  "pk.eyJ1IjoiZHdheW5lY3Jvb2tzIiwiYSI6ImNraDJlNmJ3cjA0OHEycnFkbjBsY2owbHMifQ.oMp9oQxaoLK0C4aSFwKEjw"

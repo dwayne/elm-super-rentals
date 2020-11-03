@@ -92,9 +92,8 @@ view model =
 
 viewHome : Html msg
 viewHome =
-  div [ class "jumbo" ]
-    [ div [ class "right tomster" ] []
-    , h2 [] [ text "Welcome to Super Rentals!" ]
+  viewJumbo
+    [ h2 [] [ text "Welcome to Super Rentals!" ]
     , p [] [ text "We hope you find exactly what you're looking for in a place to stay." ]
     , a [ href "/about", class "button" ] [ text "About Us" ]
     ]
@@ -102,9 +101,8 @@ viewHome =
 
 viewAbout : Html msg
 viewAbout =
-  div [ class "jumbo" ]
-    [ div [ class "right tomster" ] []
-    , h2 [] [ text "About Super Rentals" ]
+  viewJumbo
+    [ h2 [] [ text "About Super Rentals" ]
     , p [] [ text "The Super Rentals website is a delightful project created to explore Ember. By building a property rental site, we can simultaneously imagine traveling AND building Ember applications." ]
     , a [ href "/getting-in-touch", class "button" ] [ text "Contact Us" ]
     ]
@@ -112,9 +110,8 @@ viewAbout =
 
 viewContact : Html msg
 viewContact =
-  div [ class "jumbo" ]
-    [ div [ class "right tomster" ] []
-    , h2 [] [ text "Contact Us" ]
+  viewJumbo
+    [ h2 [] [ text "Contact Us" ]
     , p []
         [ text "Super Rentals Representatives would love to help you"
         , br [] []
@@ -133,3 +130,12 @@ viewContact =
         ]
     , a [ href "/about", class "button" ] [ text "About" ]
     ]
+
+
+viewJumbo : List (Html msg) -> Html msg
+viewJumbo content =
+  let
+    tomster =
+      div [ class "right tomster" ] []
+  in
+    div [ class "jumbo" ] (tomster :: content)

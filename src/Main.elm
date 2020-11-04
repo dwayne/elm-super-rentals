@@ -11,7 +11,7 @@ import Json.Decode as D exposing (Decoder)
 import Json.Decode.Pipeline as D
 import Url
 
-import Route
+import Route exposing (Route)
 
 
 main : Program () Model Msg
@@ -30,15 +30,15 @@ main =
 
 
 type alias Model =
-  { url : Url.Url
-  , key : Nav.Key
+  { key : Nav.Key
+  , route : Route
   , rentals : List (Bool, Rental)
   }
 
 
 init : () -> Url.Url -> Nav.Key -> (Model, Cmd Msg)
 init _ url key =
-  ( Model url key []
+  ( Model key (Route.fromUrl url) []
   , fetchRentals
   )
 
@@ -53,7 +53,7 @@ type Msg
   | GotRentals (Result Http.Error (List Rental))
 
 
-update : Msg -> Model -> (Model, Cmd msg)
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     ClickedLink urlRequest ->
@@ -69,9 +69,22 @@ update msg model =
           )
 
     ChangedUrl url ->
-      ( { model | url = url }
-      , Cmd.none
-      )
+      let
+        newRoute =
+          Route.fromUrl url
+      in
+        ( { model | route = newRoute }
+        , case newRoute of
+            Route.Home ->
+              fetchRentals
+
+            Route.Rental rentalId ->
+              -- TODO: Fetch the details for a rental with the given rentalId
+              Cmd.none
+
+            _ ->
+              Cmd.none
+        )
 
     ClickedToggleSize i isLarge ->
       ( { model
@@ -102,18 +115,18 @@ update msg model =
 
 
 view : Model -> Browser.Document Msg
-view model =
+view { route, rentals } =
   { title = "Super Rentals"
-  , body = [ viewApplication model.url model.rentals ]
+  , body = [ viewApplication route rentals ]
   }
 
 
-viewApplication : Url.Url -> List (Bool, Rental) -> Html Msg
-viewApplication url rentals =
+viewApplication : Route -> List (Bool, Rental) -> Html Msg
+viewApplication route rentals =
   div [ class "container" ]
     [ viewNavBar
     , div [ class "body" ] <|
-        case Route.fromUrl url of
+        case route of
           Route.Home ->
             viewHome rentals
 

@@ -11,7 +11,7 @@ import Json.Decode as D exposing (Decoder)
 import Json.Decode.Pipeline as D
 import Url
 
-import Route exposing (Route(..))
+import Route
 
 
 main : Program () Model Msg
@@ -114,16 +114,19 @@ viewApplication url rentals =
     [ viewNavBar
     , div [ class "body" ] <|
         case Route.fromUrl url of
-          Home ->
+          Route.Home ->
             viewHome rentals
 
-          About ->
+          Route.Rental rentalId ->
+            [ text ("You're viewing: " ++ rentalId) ]
+
+          Route.About ->
             viewAbout
 
-          Contact ->
+          Route.Contact ->
             viewContact
 
-          NotFound ->
+          Route.NotFound ->
             viewNotFound
     ]
 

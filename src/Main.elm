@@ -8,6 +8,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
 import Json.Decode as D exposing (Decoder)
+import Json.Decode.Pipeline as D
 import Url
 
 import Route exposing (Route(..))
@@ -209,7 +210,8 @@ viewNavBar =
 
 
 type alias Rental =
-  { title : String
+  { id : String
+  , title : String
   , owner : String
   , city : String
   , location : Location
@@ -237,7 +239,9 @@ viewRental index isLarge rental =
         , alt ("A picture of " ++ rental.title)
         ]
     , div [ class "details" ]
-        [ h3 [] [ text rental.title ]
+        [ h3 []
+            [ a [ href ("/rentals/" ++ rental.id) ] [ text rental.title ]
+            ]
         , div [ class "detail owner" ]
             [ span [] [ text "Owner:" ]
             , text " "
@@ -361,7 +365,8 @@ rentalDecoder : Decoder Rental
 rentalDecoder =
   D.map
     (\partialRental ->
-      { title = partialRental.title
+      { id = partialRental.id
+      , title = partialRental.title
       , owner = partialRental.owner
       , city = partialRental.city
       , location = partialRental.location
@@ -387,7 +392,8 @@ rentalDecoder =
 
 
 type alias PartialRental =
-  { title : String
+  { id : String
+  , title : String
   , owner : String
   , city : String
   , location : Location
@@ -400,16 +406,16 @@ type alias PartialRental =
 
 partialRentalDecoder : Decoder PartialRental
 partialRentalDecoder =
-  D.field "attributes" <|
-    D.map8 PartialRental
-      (D.field "title" D.string)
-      (D.field "owner" D.string)
-      (D.field "city" D.string)
-      (D.field "location" locationDecoder)
-      (D.field "category" D.string)
-      (D.field "bedrooms" D.int)
-      (D.field "image" D.string)
-      (D.field "description" D.string)
+  D.succeed PartialRental
+    |> D.required "id" D.string
+    |> D.requiredAt ["attributes", "title"] D.string
+    |> D.requiredAt ["attributes", "owner"] D.string
+    |> D.requiredAt ["attributes", "city"] D.string
+    |> D.requiredAt ["attributes", "location"] locationDecoder
+    |> D.requiredAt ["attributes", "category"] D.string
+    |> D.requiredAt ["attributes", "bedrooms"] D.int
+    |> D.requiredAt ["attributes", "image"] D.string
+    |> D.requiredAt ["attributes", "description"] D.string
 
 
 locationDecoder : Decoder Location

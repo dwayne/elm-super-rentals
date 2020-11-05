@@ -27,7 +27,8 @@ main =
 
 
 type alias Model =
-  { key : Nav.Key
+  { url : Url.Url
+  , key : Nav.Key
   , page : Page
   }
 
@@ -35,7 +36,7 @@ type alias Model =
 init : () -> Url.Url -> Nav.Key -> (Model, Cmd Msg)
 init _ url key =
   Page.fromRoute (Route.fromUrl url)
-    |> Tuple.mapBoth (Model key) (Cmd.map GotPage)
+    |> Tuple.mapBoth (Model url key) (Cmd.map GotPage)
 
 
 -- UPDATE
@@ -64,7 +65,7 @@ update msg model =
 
     ChangedUrl url ->
       Page.fromRoute (Route.fromUrl url)
-        |> Tuple.mapBoth (Model model.key) (Cmd.map GotPage)
+        |> Tuple.mapBoth (Model url model.key) (Cmd.map GotPage)
 
     GotPage pageMsg ->
       ( { model | page = Page.update pageMsg model.page }
@@ -76,9 +77,9 @@ update msg model =
 
 
 view : Model -> Browser.Document Msg
-view { page } =
+view { url, page } =
   { title = "Super Rentals"
   , body =
-      Page.view page
+      Page.view url page
         |> List.map (Html.map GotPage)
   }

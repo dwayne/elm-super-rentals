@@ -8,6 +8,7 @@ import Page.Contact
 import Page.Home
 import Page.Rental
 import Route exposing (Route)
+import Url
 import Widget.NavBar
 
 
@@ -80,8 +81,8 @@ update msg page =
 -- VIEW
 
 
-view : Page -> List (Html Msg)
-view page =
+view : Url.Url -> Page -> List (Html Msg)
+view url page =
   [ div [ class "container" ]
       [ Widget.NavBar.view
       , div [ class "body" ] <|
@@ -91,7 +92,7 @@ view page =
                 |> List.map (Html.map GotHome)
 
             Rental _ rentalModel ->
-              Page.Rental.view rentalModel
+              Page.Rental.view url rentalModel
                 |> List.map (Html.map GotRental)
 
             About ->

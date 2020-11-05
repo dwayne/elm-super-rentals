@@ -6,8 +6,10 @@ import Data exposing (Rental)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
+import Url
 import Widget.Jumbo
 import Widget.RentalDetailed
+import Widget.ShareButton
 
 
 -- MODEL
@@ -53,8 +55,8 @@ update msg model =
 -- VIEW
 
 
-view : Model -> List (Html Msg)
-view { maybeRental } =
+view : Url.Url -> Model -> List (Html Msg)
+view url { maybeRental } =
   case maybeRental of
     Nothing ->
       [ text "" ]
@@ -64,13 +66,14 @@ view { maybeRental } =
           [ h2 [] [ text rental.title ]
           , p []
               [ text ("Nice find! This looks like a nice place to stay near " ++ rental.city ++ ".") ]
-          , a [ href "#"
-              , target "_blank"
-              , rel "external nofollow noopener noreferrer"
-              , class "share button"
-              ]
-              [ text "Share on Twitter"
-              ]
+          , Widget.ShareButton.view
+              { url = url
+              , text = "Check out " ++ rental.title ++ " on Super Rentals!"
+              , hashtags = "vacation,travel,authentic,blessed,superrentals"
+              , via = "emberjs"
+              }
+              []
+              (text "Share on Twitter")
           ]
       , Widget.RentalDetailed.view
           isLarge

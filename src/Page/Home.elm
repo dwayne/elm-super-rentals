@@ -83,9 +83,16 @@ view { rentals, query } =
               []
           ]
       , ul [ class "results" ] <|
-          List.indexedMap
-            (\i (isLarge, rental) ->
-              li [] [ Widget.Rental.view isLarge rental (ClickedToggleSize i) ])
-            rentals
+          List.indexedMap viewRental (filterRentals query rentals)
       ]
   ]
+
+
+viewRental : Int -> (Bool, Rental) -> Html Msg
+viewRental index (isLarge, rental) =
+  li [] [ Widget.Rental.view isLarge rental (ClickedToggleSize index) ]
+
+
+filterRentals : String -> List (Bool, Rental) -> List (Bool, Rental)
+filterRentals query rentals =
+  List.filter (\(_, rental) -> String.contains query rental.title) rentals

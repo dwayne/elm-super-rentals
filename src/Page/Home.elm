@@ -67,7 +67,11 @@ view { rentals } =
       , a [ href (Route.href Route.About), class "button" ] [ text "About Us" ]
       ]
   , div [ class "rentals" ]
-      [ ul [ class "results" ] <|
+      [ label []
+          [ span [] [ text "Where would you like to stay?" ]
+          , input [ class "light" ] []
+          ]
+      , ul [ class "results" ] <|
           List.indexedMap
             (\i (isLarge, rental) ->
               li [] [ Widget.Rental.view isLarge rental (ClickedToggleSize i) ])

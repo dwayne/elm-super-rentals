@@ -5,8 +5,8 @@ import Api
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
-import Layout
 import Rental exposing (Rental)
+import Widget.Jumbo
 import Widget.RentalDetailed
 
 
@@ -60,7 +60,7 @@ view { maybeRental } =
       [ text "" ]
 
     Just (isLarge, rental) ->
-      [ Layout.jumbo
+      [ Widget.Jumbo.view
           [ h2 [] [ text rental.title ]
           , p []
               [ text ("Nice find! This looks like a nice place to stay near " ++ rental.city ++ ".") ]

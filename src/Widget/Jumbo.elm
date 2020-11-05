@@ -1,12 +1,12 @@
-module Layout exposing (jumbo)
+module Widget.Jumbo exposing (view)
 
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 
 
-jumbo : List (Html msg) -> Html msg
-jumbo content =
+view : List (Html msg) -> Html msg
+view content =
   let
     tomster =
       div [ class "right tomster" ] []

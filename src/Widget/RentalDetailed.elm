@@ -3,7 +3,6 @@ module Widget.RentalDetailed exposing (view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Layout
 import Rental exposing (Rental)
 import Widget.Map
 import Widget.RentalImage

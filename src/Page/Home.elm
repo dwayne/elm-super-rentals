@@ -5,9 +5,9 @@ import Api
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
-import Layout
 import Rental exposing (Rental)
 import Route
+import Widget.Jumbo
 import Widget.Rental
 
 
@@ -61,7 +61,7 @@ update msg model =
 
 view : Model -> List (Html Msg)
 view { rentals } =
-  [ Layout.jumbo
+  [ Widget.Jumbo.view
       [ h2 [] [ text "Welcome to Super Rentals!" ]
       , p [] [ text "We hope you find exactly what you're looking for in a place to stay." ]
       , a [ href (Route.href Route.About), class "button" ] [ text "About Us" ]

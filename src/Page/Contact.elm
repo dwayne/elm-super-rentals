@@ -3,13 +3,13 @@ module Page.Contact exposing (view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Layout
 import Route
+import Widget.Jumbo
 
 
 view : List (Html msg)
 view =
-  [ Layout.jumbo
+  [ Widget.Jumbo.view
       [ h2 [] [ text "Contact Us" ]
       , p []
           [ text "Super Rentals Representatives would love to help you"

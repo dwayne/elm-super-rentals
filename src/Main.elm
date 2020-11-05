@@ -33,12 +33,13 @@ type alias Model =
   { key : Nav.Key
   , route : Route
   , rentals : List (Bool, Rental)
+  , rental : Maybe Rental
   }
 
 
 init : () -> Url.Url -> Nav.Key -> (Model, Cmd Msg)
 init _ url key =
-  ( Model key (Route.fromUrl url) []
+  ( Model key (Route.fromUrl url) [] Nothing
   , fetchRentals
   )
 
@@ -51,6 +52,7 @@ type Msg
   | ChangedUrl Url.Url
   | ClickedToggleSize Int Bool
   | GotRentals (Result Http.Error (List Rental))
+  | GotRental (Result Http.Error Rental)
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -79,8 +81,7 @@ update msg model =
               fetchRentals
 
             Route.Rental rentalId ->
-              -- TODO: Fetch the details for a rental with the given rentalId
-              Cmd.none
+              fetchRental rentalId
 
             _ ->
               Cmd.none
@@ -106,6 +107,16 @@ update msg model =
       )
 
     GotRentals (Err e) ->
+      ( Debug.log ("Got error: " ++ Debug.toString e) model
+      , Cmd.none
+      )
+
+    GotRental (Ok rental) ->
+      ( { model | rental = Just rental }
+      , Cmd.none
+      )
+
+    GotRental (Err e) ->
       ( Debug.log ("Got error: " ++ Debug.toString e) model
       , Cmd.none
       )
@@ -362,6 +373,14 @@ mapBoxAccessToken =
 
 
 -- API
+
+
+fetchRental : String -> Cmd Msg
+fetchRental id =
+  Http.get
+    { url = "http://localhost:8000/api/rentals/" ++ id ++ ".json"
+    , expect = Http.expectJson GotRental (D.field "data" rentalDecoder)
+    }
 
 
 fetchRentals : Cmd Msg

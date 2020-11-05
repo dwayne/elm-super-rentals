@@ -33,7 +33,7 @@ type alias Model =
   { key : Nav.Key
   , route : Route
   , rentals : List (Bool, Rental)
-  , rental : Maybe Rental
+  , rental : Maybe (Bool, Rental)
   }
 
 
@@ -88,16 +88,27 @@ update msg model =
         )
 
     ClickedToggleSize i isLarge ->
-      ( { model
-        | rentals =
-            List.indexedMap
-              (\j (current, rental) ->
-                if i == j then
-                  (isLarge, rental)
-                else
-                  (current, rental))
-              model.rentals
-        }
+      ( if i >= 0 then
+          { model
+          | rentals =
+              List.indexedMap
+                (\j (current, rental) ->
+                  if i == j then
+                    (isLarge, rental)
+                  else
+                    (current, rental))
+                model.rentals
+          }
+        else
+          { model
+          | rental =
+              case model.rental of
+                Just (_, r) ->
+                  Just (isLarge, r)
+
+                Nothing ->
+                  Nothing
+          }
       , Cmd.none
       )
 
@@ -112,7 +123,7 @@ update msg model =
       )
 
     GotRental (Ok rental) ->
-      ( { model | rental = Just rental }
+      ( { model | rental = Just (False, rental) }
       , Cmd.none
       )
 
@@ -126,14 +137,14 @@ update msg model =
 
 
 view : Model -> Browser.Document Msg
-view { route, rentals } =
+view { route, rental, rentals } =
   { title = "Super Rentals"
-  , body = [ viewApplication route rentals ]
+  , body = [ viewApplication route rental rentals ]
   }
 
 
-viewApplication : Route -> List (Bool, Rental) -> Html Msg
-viewApplication route rentals =
+viewApplication : Route -> Maybe (Bool, Rental) -> List (Bool, Rental) -> Html Msg
+viewApplication route rental rentals =
   div [ class "container" ]
     [ viewNavBar
     , div [ class "body" ] <|
@@ -141,8 +152,13 @@ viewApplication route rentals =
           Route.Home ->
             viewHome rentals
 
-          Route.Rental rentalId ->
-            [ text ("You're viewing: " ++ rentalId) ]
+          Route.Rental _ ->
+            case rental of
+              Just (isLarge, r) ->
+                viewRentalDetailed isLarge r
+
+              Nothing ->
+                viewNotFound
 
           Route.About ->
             viewAbout
@@ -168,6 +184,67 @@ viewHome rentals =
             (\i (isLarge, rental) ->
               li [] [ viewRental i isLarge rental ])
             rentals
+      ]
+  ]
+
+
+viewRentalDetailed : Bool -> Rental -> List (Html Msg)
+viewRentalDetailed isLarge rental =
+  [ viewJumbo
+      [ h2 [] [ text rental.title ]
+      , p []
+          [ text ("Nice find! This looks like a nice place to stay near " ++ rental.city ++ ".") ]
+      , a [ href "#"
+          , target "_blank"
+          , rel "external nofollow noopener noreferrer"
+          , class "share button"
+          ]
+          [ text "Share on Twitter"
+          ]
+      ]
+  , article [ class "rental detailed" ]
+      [ viewRentalImage
+          -1
+          isLarge
+          [ src rental.image
+          , alt ("A picture of " ++ rental.title)
+          ]
+      , div [ class "details" ]
+          [ h3 [] [ text ("About " ++ rental.title) ]
+          , div [ class "detail owner" ]
+              [ span [] [ text "Owner:" ]
+              , text " "
+              , text rental.owner
+              ]
+          , div [ class "detail type" ]
+              [ span [] [ text "Type:" ]
+              , text " "
+              , text (rental.kind ++ " - " ++ rental.category)
+              ]
+          , div [ class "detail location" ]
+              [ span [] [ text "Location:" ]
+              , text " "
+              , text rental.city
+              ]
+          , div [ class "detail bedrooms" ]
+              [ span [] [ text "Number of bedrooms:" ]
+              , text " "
+              , text (String.fromInt rental.bedrooms)
+              ]
+          , div [ class "detail description" ]
+              [ p [] [ text rental.description ]
+              ]
+          ]
+      , viewMap
+          { lat = rental.location.lat
+          , lng = rental.location.lng
+          , zoom = 12
+          , width = 894
+          , height = 600
+          }
+          [ alt ("A map of " ++ rental.title)
+          , class "large"
+          ]
       ]
   ]
 

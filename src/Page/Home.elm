@@ -5,6 +5,7 @@ import Api
 import Data exposing (Rental)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onInput)
 import Http
 import Route
 import Widget.Jumbo
@@ -16,12 +17,13 @@ import Widget.Rental
 
 type alias Model =
   { rentals : List (Bool, Rental)
+  , query : String
   }
 
 
 init : (Model, Cmd Msg)
 init =
-  ( Model []
+  ( Model [] ""
   , Api.fetchRentals GotRentals
   )
 
@@ -31,6 +33,7 @@ init =
 
 type Msg
   = ClickedToggleSize Int Bool
+  | ChangedQuery String
   | GotRentals (Result Http.Error (List Rental))
 
 
@@ -49,6 +52,9 @@ update msg model =
             model.rentals
       }
 
+    ChangedQuery query ->
+      { model | query = query }
+
     GotRentals (Ok rentals) ->
       { model | rentals = List.map (\rental -> (False, rental)) rentals }
 
@@ -60,7 +66,7 @@ update msg model =
 
 
 view : Model -> List (Html Msg)
-view { rentals } =
+view { rentals, query } =
   [ Widget.Jumbo.view
       [ h2 [] [ text "Welcome to Super Rentals!" ]
       , p [] [ text "We hope you find exactly what you're looking for in a place to stay." ]
@@ -69,7 +75,12 @@ view { rentals } =
   , div [ class "rentals" ]
       [ label []
           [ span [] [ text "Where would you like to stay?" ]
-          , input [ class "light" ] []
+          , input
+              [ onInput ChangedQuery
+              , value query
+              , class "light"
+              ]
+              []
           ]
       , ul [ class "results" ] <|
           List.indexedMap

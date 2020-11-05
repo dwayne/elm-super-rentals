@@ -2,10 +2,10 @@ module Page.Rental exposing (Model, init, Msg, update, view)
 
 
 import Api
+import Data exposing (Rental)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
-import Rental exposing (Rental)
 import Widget.Jumbo
 import Widget.RentalDetailed
 

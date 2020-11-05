@@ -1,4 +1,4 @@
-module Rental exposing (Rental, Location)
+module Data exposing (Rental, Location)
 
 
 type alias Rental =

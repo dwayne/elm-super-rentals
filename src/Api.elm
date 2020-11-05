@@ -1,10 +1,10 @@
 module Api exposing (fetchRental, fetchRentals)
 
 
+import Data exposing (Rental, Location)
 import Http
 import Json.Decode as D exposing (Decoder)
 import Json.Decode.Pipeline as D
-import Rental exposing (Rental, Location)
 
 
 fetchRental : String -> (Result Http.Error Rental -> msg) -> Cmd msg

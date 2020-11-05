@@ -10,7 +10,7 @@ import Json.Decode.Pipeline as D
 fetchRental : String -> (Result Http.Error Rental -> msg) -> Cmd msg
 fetchRental id toMsg =
   Http.get
-    { url = "http://localhost:8000/api/rentals/" ++ id ++ ".json"
+    { url = "/api/rentals/" ++ id ++ ".json"
     , expect = Http.expectJson toMsg (D.field "data" rentalDecoder)
     }
 
@@ -18,7 +18,7 @@ fetchRental id toMsg =
 fetchRentals : (Result Http.Error (List Rental) -> msg) -> Cmd msg
 fetchRentals toMsg =
   Http.get
-    { url = "http://localhost:8000/api/rentals.json"
+    { url = "/api/rentals.json"
     , expect = Http.expectJson toMsg rentalsDecoder
     }
 

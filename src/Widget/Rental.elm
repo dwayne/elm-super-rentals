@@ -4,6 +4,7 @@ module Widget.Rental exposing (view)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Rental exposing (Rental)
+import Route
 import Widget.Map
 import Widget.RentalImage
 
@@ -19,7 +20,7 @@ view isLarge rental toMsg =
         toMsg
     , div [ class "details" ]
         [ h3 []
-            [ a [ href ("/rentals/" ++ rental.id) ] [ text rental.title ]
+            [ a [ href (Route.href (Route.Rental rental.id)) ] [ text rental.title ]
             ]
         , div [ class "detail owner" ]
             [ span [] [ text "Owner:" ]

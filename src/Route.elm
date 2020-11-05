@@ -1,4 +1,4 @@
-module Route exposing (Route(..), fromUrl)
+module Route exposing (Route(..), fromUrl, href)
 
 
 import Url
@@ -13,8 +13,8 @@ type Route
   | NotFound
 
 
-route : Parser (Route -> a) a
-route =
+parser : Parser (Route -> a) a
+parser =
   oneOf
     [ map Home top
     , map Rental (s "rentals" </> string)
@@ -25,4 +25,23 @@ route =
 
 fromUrl : Url.Url -> Route
 fromUrl url =
-  Maybe.withDefault NotFound (parse route url)
+  Maybe.withDefault NotFound (parse parser url)
+
+
+href : Route -> String
+href route =
+  case route of
+    Home ->
+      "/"
+
+    Rental rentalId ->
+      "/rentals/" ++ rentalId
+
+    About ->
+      "/about"
+
+    Contact ->
+      "/getting-in-touch"
+
+    NotFound ->
+      "#"

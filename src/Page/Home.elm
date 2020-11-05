@@ -7,6 +7,7 @@ import Html.Attributes exposing (..)
 import Http
 import Layout
 import Rental exposing (Rental)
+import Route
 import Widget.Rental
 
 
@@ -63,7 +64,7 @@ view { rentals } =
   [ Layout.jumbo
       [ h2 [] [ text "Welcome to Super Rentals!" ]
       , p [] [ text "We hope you find exactly what you're looking for in a place to stay." ]
-      , a [ href "/about", class "button" ] [ text "About Us" ]
+      , a [ href (Route.href Route.About), class "button" ] [ text "About Us" ]
       ]
   , div [ class "rentals" ]
       [ ul [ class "results" ] <|

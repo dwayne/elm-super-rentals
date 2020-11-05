@@ -4,6 +4,7 @@ module Page.Contact exposing (view)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Layout
+import Route
 
 
 view : List (Html msg)
@@ -26,6 +27,6 @@ view =
           , br [] []
           , a [ href "mailto:superrentalsrep@emberjs.com" ] [ text "superrentalsrep@emberjs.com" ]
           ]
-      , a [ href "/about", class "button" ] [ text "About" ]
+      , a [ href (Route.href Route.About), class "button" ] [ text "About" ]
       ]
   ]

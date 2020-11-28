@@ -8,6 +8,7 @@ import Html.Attributes exposing (..)
 import Page.About
 import Page.Contact
 import Page.Home
+import Page.NotFound
 import Page.Rental
 import Route exposing (Route)
 import Url exposing (Url)
@@ -157,7 +158,7 @@ view { url, page } =
                   Page.Contact.view
 
                 NotFound ->
-                  [ text "Not found" ]
+                  Page.NotFound.view
           ]
       ]
   }

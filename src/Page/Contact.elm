@@ -1,8 +1,8 @@
 module Page.Contact exposing (view)
 
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html exposing (Html, a, address, br, h2, p, text)
+import Html.Attributes exposing (class, href)
 import Route
 import Widget.Jumbo
 

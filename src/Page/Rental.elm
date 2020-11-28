@@ -3,8 +3,7 @@ module Page.Rental exposing (Model, init, Msg, update, view)
 
 import Api
 import Data exposing (Rental)
-import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html exposing (Html, h2, p, text)
 import Http
 import Url
 import Widget.Jumbo
@@ -16,7 +15,7 @@ import Widget.ShareButton
 
 
 type alias Model =
-  { maybeRental : Maybe (Bool, Rental)
+  { maybeRental : Maybe (Rental, Bool)
   }
 
 
@@ -42,11 +41,11 @@ update msg model =
       { model
       | maybeRental =
           model.maybeRental
-            |> Maybe.map (\(_, rental) -> (isLarge, rental))
+            |> Maybe.map (\(rental, _) -> (rental, isLarge))
       }
 
     GotRental (Ok rental) ->
-      { model | maybeRental = Just (False, rental) }
+      { model | maybeRental = Just (rental, False) }
 
     GotRental (Err e) ->
       Debug.log ("Got error: " ++ Debug.toString e) model
@@ -61,7 +60,7 @@ view url { maybeRental } =
     Nothing ->
       [ text "" ]
 
-    Just (isLarge, rental) ->
+    Just (rental, isLarge) ->
       [ Widget.Jumbo.view
           [ h2 [] [ text rental.title ]
           , p []
@@ -76,7 +75,7 @@ view url { maybeRental } =
               (text "Share on Twitter")
           ]
       , Widget.RentalDetailed.view
+          ClickedToggleSize
           isLarge
           rental
-          ClickedToggleSize
       ]

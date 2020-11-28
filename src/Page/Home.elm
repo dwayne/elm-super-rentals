@@ -3,9 +3,9 @@ module Page.Home exposing (Model, init, Msg, update, view)
 
 import Api
 import Data exposing (Rental)
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onInput)
+import Html exposing (Html, a, div, h2, input, label, li, p, span, text, ul)
+import Html.Attributes exposing (class, href, value)
+import Html.Events as E
 import Http
 import Route
 import Widget.Jumbo
@@ -16,7 +16,7 @@ import Widget.Rental
 
 
 type alias Model =
-  { rentals : List (Bool, Rental)
+  { rentals : List (Rental, Bool)
   , query : String
   }
 
@@ -44,11 +44,11 @@ update msg model =
       { model
       | rentals =
           List.indexedMap
-            (\j (current, rental) ->
+            (\j (rental, current) ->
               if i == j then
-                (isLarge, rental)
+                (rental, isLarge)
               else
-                (current, rental))
+                (rental, current))
             model.rentals
       }
 
@@ -56,7 +56,7 @@ update msg model =
       { model | query = query }
 
     GotRentals (Ok rentals) ->
-      { model | rentals = List.map (\rental -> (False, rental)) rentals }
+      { model | rentals = List.map (\rental -> (rental, False)) rentals }
 
     GotRentals (Err e) ->
       Debug.log ("Got error: " ++ Debug.toString e) model
@@ -76,7 +76,7 @@ view { rentals, query } =
       [ label []
           [ span [] [ text "Where would you like to stay?" ]
           , input
-              [ onInput ChangedQuery
+              [ E.onInput ChangedQuery
               , value query
               , class "light"
               ]
@@ -88,11 +88,11 @@ view { rentals, query } =
   ]
 
 
-viewRental : Int -> (Bool, Rental) -> Html Msg
-viewRental index (isLarge, rental) =
-  li [] [ Widget.Rental.view isLarge rental (ClickedToggleSize index) ]
+viewRental : Int -> (Rental, Bool) -> Html Msg
+viewRental index (rental, isLarge) =
+  li [] [ Widget.Rental.view (ClickedToggleSize index) isLarge rental ]
 
 
-filterRentals : String -> List (Bool, Rental) -> List (Bool, Rental)
+filterRentals : String -> List (Rental, Bool) -> List (Rental, Bool)
 filterRentals query rentals =
-  List.filter (\(_, rental) -> String.contains query rental.title) rentals
+  List.filter (\(rental, _) -> String.contains query rental.title) rentals

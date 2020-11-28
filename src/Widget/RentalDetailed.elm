@@ -2,21 +2,21 @@ module Widget.RentalDetailed exposing (view)
 
 
 import Data exposing (Rental)
-import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html exposing (Html, article, div, h3, p, span, text)
+import Html.Attributes exposing (alt, class, src)
 import Widget.Map
 import Widget.RentalImage
 
 
-view : Bool -> Rental -> (Bool -> msg) -> Html msg
-view isLarge rental toMsg =
+view : (Bool -> msg) -> Bool -> Rental -> Html msg
+view handleClick isLarge rental =
   article [ class "rental detailed" ]
     [ Widget.RentalImage.view
+        handleClick
         isLarge
         [ src rental.image
         , alt ("A picture of " ++ rental.title)
         ]
-        toMsg
     , div [ class "details" ]
         [ h3 [] [ text ("About " ++ rental.title) ]
         , div [ class "detail owner" ]

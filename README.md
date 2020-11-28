@@ -1,4 +1,4 @@
-# Super Rentals - [Live Demo](https://elm-super-rentals.dwaynecrooks.com/)
+# Super Rentals - [Live Demo](https://elm-super-rentals.netlify.app/)
 
 ![A screenshot of Super Rentals](/screenshot.png)
 

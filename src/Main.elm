@@ -5,9 +5,12 @@ import Browser
 import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Page exposing (Page)
+import Page.About
+import Page.Contact
+import Page.Home
+import Page.Rental
 import Route exposing (Route)
-import Url
+import Url exposing (Url)
 import Widget.NavBar
 
 
@@ -27,16 +30,51 @@ main =
 
 
 type alias Model =
-  { url : Url.Url
+  { url : Url
   , key : Nav.Key
   , page : Page
   }
 
 
-init : () -> Url.Url -> Nav.Key -> (Model, Cmd Msg)
+type Page
+  = Home Page.Home.Model
+  | Rental Page.Rental.Model
+  | About
+  | Contact
+  | NotFound
+
+
+init : () -> Url -> Nav.Key -> (Model, Cmd Msg)
 init _ url key =
-  Page.fromRoute (Route.fromUrl url)
-    |> Tuple.mapBoth (Model url key) (Cmd.map GotPage)
+  fromUrl url
+    |> Tuple.mapFirst (Model url key)
+
+
+fromUrl : Url -> (Page, Cmd Msg)
+fromUrl url =
+  case Route.fromUrl url of
+    Just Route.Home ->
+      Page.Home.init
+        |> Tuple.mapBoth Home (Cmd.map NavigatedToHome)
+
+    Just (Route.Rental rentalId) ->
+      Page.Rental.init rentalId
+        |> Tuple.mapBoth Rental (Cmd.map NavigatedToRental)
+
+    Just Route.About ->
+      ( About
+      , Cmd.none
+      )
+
+    Just Route.Contact ->
+      ( Contact
+      , Cmd.none
+      )
+
+    Nothing ->
+      ( NotFound
+      , Cmd.none
+      )
 
 
 -- UPDATE
@@ -44,8 +82,9 @@ init _ url key =
 
 type Msg
   = ClickedLink Browser.UrlRequest
-  | ChangedUrl Url.Url
-  | GotPage Page.Msg
+  | ChangedUrl Url
+  | NavigatedToHome Page.Home.Msg
+  | NavigatedToRental Page.Rental.Msg
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -64,13 +103,32 @@ update msg model =
           )
 
     ChangedUrl url ->
-      Page.fromRoute (Route.fromUrl url)
-        |> Tuple.mapBoth (Model url model.key) (Cmd.map GotPage)
+      fromUrl url
+        |> Tuple.mapFirst (Model url model.key)
 
-    GotPage pageMsg ->
-      ( { model | page = Page.update pageMsg model.page }
-      , Cmd.none
-      )
+    NavigatedToHome homeMsg ->
+      case model.page of
+        Home homeModel ->
+          ( { model | page = Home (Page.Home.update homeMsg homeModel) }
+          , Cmd.none
+          )
+
+        _ ->
+          ( model
+          , Cmd.none
+          )
+
+    NavigatedToRental rentalMsg ->
+      case model.page of
+        Rental rentalModel ->
+          ( { model | page = Rental (Page.Rental.update rentalMsg rentalModel) }
+          , Cmd.none
+          )
+
+        _ ->
+          ( model
+          , Cmd.none
+          )
 
 
 -- VIEW
@@ -80,6 +138,26 @@ view : Model -> Browser.Document Msg
 view { url, page } =
   { title = "Super Rentals"
   , body =
-      Page.view url page
-        |> List.map (Html.map GotPage)
+      [ div [ class "container" ]
+          [ Widget.NavBar.view
+          , div [ class "body" ] <|
+              case page of
+                Home homeModel ->
+                  Page.Home.view homeModel
+                    |> List.map (Html.map NavigatedToHome)
+
+                Rental rentalModel ->
+                  Page.Rental.view url rentalModel
+                    |> List.map (Html.map NavigatedToRental)
+
+                About ->
+                  Page.About.view
+
+                Contact ->
+                  Page.Contact.view
+
+                NotFound ->
+                  [ text "Not found" ]
+          ]
+      ]
   }

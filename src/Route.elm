@@ -10,7 +10,11 @@ type Route
   | Rental String
   | About
   | Contact
-  | NotFound
+
+
+fromUrl : Url.Url -> Maybe Route
+fromUrl url =
+  parse parser url
 
 
 parser : Parser (Route -> a) a
@@ -21,11 +25,6 @@ parser =
     , map About (s "about")
     , map Contact (s "getting-in-touch")
     ]
-
-
-fromUrl : Url.Url -> Route
-fromUrl url =
-  Maybe.withDefault NotFound (parse parser url)
 
 
 href : Route -> String
@@ -42,6 +41,3 @@ href route =
 
     Contact ->
       "/getting-in-touch"
-
-    NotFound ->
-      "#"

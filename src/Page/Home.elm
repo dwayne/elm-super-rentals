@@ -59,7 +59,7 @@ update msg model =
       { model | rentals = List.map (\rental -> (rental, False)) rentals }
 
     GotRentals (Err e) ->
-      Debug.log ("Got error: " ++ Debug.toString e) model
+      model
 
 
 -- VIEW

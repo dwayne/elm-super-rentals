@@ -48,7 +48,7 @@ update msg model =
       { model | maybeRental = Just (rental, False) }
 
     GotRental (Err e) ->
-      Debug.log ("Got error: " ++ Debug.toString e) model
+      model
 
 
 -- VIEW

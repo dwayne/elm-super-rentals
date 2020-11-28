@@ -1,14 +1,14 @@
 module Widget.ShareButton exposing (Config, view)
 
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Url
+import Html exposing (Attribute, Html, a)
+import Html.Attributes exposing (class, href, rel, target)
+import Url exposing (Url)
 import Url.Builder exposing (crossOrigin, string)
 
 
 type alias Config =
-  { url : Url.Url
+  { url : Url
   , text : String
   , hashtags : String
   , via : String

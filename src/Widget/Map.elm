@@ -1,8 +1,8 @@
 module Widget.Map exposing (Config, view)
 
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html exposing (Attribute, Html, div, img)
+import Html.Attributes exposing (alt, class, height, src, width)
 
 
 type alias Config =

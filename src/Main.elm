@@ -3,8 +3,8 @@ module Main exposing (main)
 
 import Browser
 import Browser.Navigation as Nav
-import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html exposing (div)
+import Html.Attributes exposing (class)
 import Page.About
 import Page.Contact
 import Page.Home

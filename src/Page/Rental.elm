@@ -75,7 +75,8 @@ view url { maybeRental } =
               (text "Share on Twitter")
           ]
       , Widget.RentalDetailed.view
-          ClickedToggleSize
+          (ClickedToggleSize True)
+          (ClickedToggleSize False)
           isLarge
           rental
       ]

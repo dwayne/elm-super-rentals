@@ -6,12 +6,12 @@ import Html.Attributes exposing (class)
 import Html.Events as E
 
 
-view : (Bool -> msg) -> Bool -> List (Attribute msg) -> Html msg
-view handleClick isLarge attrs =
+view : msg -> msg -> Bool -> List (Attribute msg) -> Html msg
+view onEnlargeClick onShrinkClick isLarge attrs =
   if isLarge then
     button
       [ class "image large"
-      , E.onClick (handleClick False)
+      , E.onClick onShrinkClick
       ]
       [ img attrs []
       , small [] [ text "View Smaller" ]
@@ -19,7 +19,7 @@ view handleClick isLarge attrs =
   else
     button
       [ class "image"
-      , E.onClick (handleClick True)
+      , E.onClick onEnlargeClick
       ]
       [ img attrs []
       , small [] [ text "View Larger" ]

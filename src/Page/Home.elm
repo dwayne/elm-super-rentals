@@ -90,7 +90,13 @@ view { rentals, query } =
 
 viewRental : Int -> (Rental, Bool) -> Html Msg
 viewRental index (rental, isLarge) =
-  li [] [ Widget.Rental.view (ClickedToggleSize index) isLarge rental ]
+  li []
+    [ Widget.Rental.view
+        (ClickedToggleSize index True)
+        (ClickedToggleSize index False)
+        isLarge
+        rental
+    ]
 
 
 filterRentals : String -> List (Rental, Bool) -> List (Rental, Bool)

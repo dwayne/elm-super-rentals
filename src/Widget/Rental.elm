@@ -9,11 +9,12 @@ import Widget.Map
 import Widget.RentalImage
 
 
-view : (Bool -> msg) -> Bool -> Rental -> Html msg
-view handleClick isLarge rental =
+view : msg -> msg -> Bool -> Rental -> Html msg
+view onEnlargeClick onShrinkClick isLarge rental =
   article [ class "rental" ]
     [ Widget.RentalImage.view
-        handleClick
+        onEnlargeClick
+        onShrinkClick
         isLarge
         [ src rental.image
         , alt ("A picture of " ++ rental.title)

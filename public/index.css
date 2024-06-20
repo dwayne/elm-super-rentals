@@ -448,7 +448,7 @@ p {
 }
 
 .tomster {
-  background: url(../assets/images/teaching-tomster.png);
+  background: url(/images/teaching-tomster.png);
   background-size: contain;
   background-repeat: no-repeat;
   height: 200px;
@@ -458,7 +458,7 @@ p {
   top: -25px;
 }
 
-.screen-reader{
+.screen-reader {
   position: absolute;
   overflow: hidden;
   clip: rect(0 0 0 0);

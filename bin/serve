@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+#
+# Usage: serve [8000]
+#
+
+set -euo pipefail
+
+port="${1:-8000}"
+
+caddy file-server --browse --listen :"$port" --root "${build:?}/application"

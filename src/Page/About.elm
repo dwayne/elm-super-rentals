@@ -1,18 +1,22 @@
 module Page.About exposing (view)
 
+import Data.Route as Route
+import Html as H
+import Html.Attributes as HA
+import View.Jumbo
 
-import Html exposing (Html, a, h2, p, text)
-import Html.Attributes exposing (class, href)
-import Route
-import Widget.Jumbo
 
-
-view : List (Html msg)
+view : List (H.Html msg)
 view =
-  [ Widget.Jumbo.view
-      [ h2 [] [ text "About Super Rentals" ]
-      , p []
-          [ text "The Super Rentals website is a delightful project created to explore Ember. By building a property rental site, we can simultaneously imagine traveling AND building Ember applications." ]
-      , a [ href (Route.href Route.Contact), class "button" ] [ text "Contact Us" ]
-      ]
-  ]
+    [ View.Jumbo.view
+        [ H.h2 [] [ H.text "About Super Rentals" ]
+        , H.p []
+            [ H.text "The Super Rentals website is a delightful project created to explore Ember. By building a property rental site, we can simultaneously imagine traveling AND building Ember applications."
+            ]
+        , H.a
+            [ HA.href <| Route.toString Route.Contact
+            , HA.class "button"
+            ]
+            [ H.text "Contact Us" ]
+        ]
+    ]

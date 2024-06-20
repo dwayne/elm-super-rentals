@@ -1,82 +1,87 @@
-module Page.Rental exposing (Model, init, Msg, update, view)
-
+module Page.Rental exposing (Model, Msg, init, update, view)
 
 import Api
-import Data exposing (Rental)
-import Html exposing (Html, h2, p, text)
+import Data.Rental exposing (Rental)
+import Html as H
 import Http
-import Url
-import Widget.Jumbo
-import Widget.RentalDetailed
-import Widget.ShareButton
+import Url exposing (Url)
+import View.Jumbo
+import View.RentalDetailed
+import View.ShareButton
+
 
 
 -- MODEL
 
 
 type alias Model =
-  { maybeRental : Maybe (Rental, Bool)
-  }
+    { maybeRental : Maybe ( Rental, Bool )
+    }
 
 
-init : String -> (Model, Cmd Msg)
+init : String -> ( Model, Cmd Msg )
 init rentalId =
-  ( Model Nothing
-  , Api.fetchRental rentalId GotRental
-  )
+    ( Model Nothing
+    , Api.fetchRental rentalId GotRental
+    )
+
 
 
 -- UPDATE
 
 
 type Msg
-  = ClickedToggleSize Bool
-  | GotRental (Result Http.Error Rental)
+    = GotRental (Result Http.Error Rental)
+    | ClickedToggleSize Bool
 
 
 update : Msg -> Model -> Model
 update msg model =
-  case msg of
-    ClickedToggleSize isLarge ->
-      { model
-      | maybeRental =
-          model.maybeRental
-            |> Maybe.map (\(rental, _) -> (rental, isLarge))
-      }
+    case msg of
+        GotRental result ->
+            case result of
+                Ok rental ->
+                    { model | maybeRental = Just ( rental, False ) }
 
-    GotRental (Ok rental) ->
-      { model | maybeRental = Just (rental, False) }
+                Err e ->
+                    model
 
-    GotRental (Err e) ->
-      model
+        ClickedToggleSize isLarge ->
+            { model
+                | maybeRental =
+                    model.maybeRental
+                        |> Maybe.map (\( rental, _ ) -> ( rental, isLarge ))
+            }
+
 
 
 -- VIEW
 
 
-view : Url.Url -> Model -> List (Html Msg)
+view : Url.Url -> Model -> List (H.Html Msg)
 view url { maybeRental } =
-  case maybeRental of
-    Nothing ->
-      [ text "" ]
+    case maybeRental of
+        Just ( rental, isLarge ) ->
+            [ View.Jumbo.view
+                [ H.h2 [] [ H.text rental.title ]
+                , H.p []
+                    [ H.text <| "Nice find! This looks like a nice place to stay near " ++ rental.city ++ "." ]
+                , View.ShareButton.view
+                    { url = url
+                    , text = "Check out " ++ rental.title ++ " on Super Rentals!"
+                    , hashtags = "vacation,travel,authentic,blessed,superrentals"
+                    , via = "emberjs"
+                    , attrs = []
+                    , content = H.text "Share on Twitter"
+                    }
+                ]
+            , View.RentalDetailed.view
+                { isLarge = isLarge
+                , onEnlargeClick = ClickedToggleSize True
+                , onShrinkClick = ClickedToggleSize False
+                , rental = rental
+                }
+            ]
 
-    Just (rental, isLarge) ->
-      [ Widget.Jumbo.view
-          [ h2 [] [ text rental.title ]
-          , p []
-              [ text ("Nice find! This looks like a nice place to stay near " ++ rental.city ++ ".") ]
-          , Widget.ShareButton.view
-              { url = url
-              , text = "Check out " ++ rental.title ++ " on Super Rentals!"
-              , hashtags = "vacation,travel,authentic,blessed,superrentals"
-              , via = "emberjs"
-              }
-              []
-              (text "Share on Twitter")
-          ]
-      , Widget.RentalDetailed.view
-          (ClickedToggleSize True)
-          (ClickedToggleSize False)
-          isLarge
-          rental
-      ]
+        Nothing ->
+            [ H.text "" ]

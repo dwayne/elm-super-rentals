@@ -1,92 +1,93 @@
 module Api exposing (fetchRental, fetchRentals)
 
-
-import Data exposing (Rental, Location)
+import Data.Location exposing (Location)
+import Data.Rental exposing (Rental)
 import Http
-import Json.Decode as D exposing (Decoder)
-import Json.Decode.Pipeline as D
+import Json.Decode as JD
+import Json.Decode.Pipeline as JD
 
 
 fetchRental : String -> (Result Http.Error Rental -> msg) -> Cmd msg
 fetchRental id toMsg =
-  Http.get
-    { url = "/api/rentals/" ++ id ++ ".json"
-    , expect = Http.expectJson toMsg (D.field "data" rentalDecoder)
-    }
+    Http.get
+        { url = "/api/rentals/" ++ id ++ ".json"
+        , expect = Http.expectJson toMsg (JD.field "data" rentalDecoder)
+        }
 
 
 fetchRentals : (Result Http.Error (List Rental) -> msg) -> Cmd msg
 fetchRentals toMsg =
-  Http.get
-    { url = "/api/rentals.json"
-    , expect = Http.expectJson toMsg rentalsDecoder
-    }
+    Http.get
+        { url = "/api/rentals.json"
+        , expect = Http.expectJson toMsg rentalsDecoder
+        }
 
 
-rentalsDecoder : Decoder (List Rental)
+rentalsDecoder : JD.Decoder (List Rental)
 rentalsDecoder =
-  D.field "data" (D.list rentalDecoder)
+    JD.field "data" (JD.list rentalDecoder)
 
 
-rentalDecoder : Decoder Rental
+rentalDecoder : JD.Decoder Rental
 rentalDecoder =
-  D.map
-    (\partialRental ->
-      { id = partialRental.id
-      , title = partialRental.title
-      , owner = partialRental.owner
-      , city = partialRental.city
-      , location = partialRental.location
-      , category = partialRental.category
-      , kind =
-          case partialRental.category of
-            "Condo" ->
-              "Community"
+    JD.map
+        (\partialRental ->
+            { id = partialRental.id
+            , title = partialRental.title
+            , owner = partialRental.owner
+            , city = partialRental.city
+            , location = partialRental.location
+            , category = partialRental.category
+            , kind =
+                case partialRental.category of
+                    "Condo" ->
+                        "Community"
 
-            "Townhouse" ->
-              "Community"
+                    "Townhouse" ->
+                        "Community"
 
-            "Apartment" ->
-              "Community"
+                    "Apartment" ->
+                        "Community"
 
-            _ ->
-              "Standalone"
-      , bedrooms = partialRental.bedrooms
-      , image = partialRental.image
-      , description = partialRental.description
-      })
-    partialRentalDecoder
+                    _ ->
+                        "Standalone"
+            , bedrooms = partialRental.bedrooms
+            , image = partialRental.image
+            , description = partialRental.description
+            }
+        )
+        partialRentalDecoder
 
 
 type alias PartialRental =
-  { id : String
-  , title : String
-  , owner : String
-  , city : String
-  , location : Location
-  , category : String
-  , bedrooms : Int
-  , image : String
-  , description : String
-  }
+    { id : String
+    , title : String
+    , owner : String
+    , city : String
+    , location : Location
+    , category : String
+    , bedrooms : Int
+    , image : String
+    , description : String
+    }
 
 
-partialRentalDecoder : Decoder PartialRental
+partialRentalDecoder : JD.Decoder PartialRental
 partialRentalDecoder =
-  D.succeed PartialRental
-    |> D.required "id" D.string
-    |> D.requiredAt ["attributes", "title"] D.string
-    |> D.requiredAt ["attributes", "owner"] D.string
-    |> D.requiredAt ["attributes", "city"] D.string
-    |> D.requiredAt ["attributes", "location"] locationDecoder
-    |> D.requiredAt ["attributes", "category"] D.string
-    |> D.requiredAt ["attributes", "bedrooms"] D.int
-    |> D.requiredAt ["attributes", "image"] D.string
-    |> D.requiredAt ["attributes", "description"] D.string
+    JD.succeed PartialRental
+        |> JD.required "id" JD.string
+        |> JD.requiredAt [ "attributes", "title" ] JD.string
+        |> JD.requiredAt [ "attributes", "owner" ] JD.string
+        |> JD.requiredAt [ "attributes", "city" ] JD.string
+        |> JD.requiredAt [ "attributes", "location" ] locationDecoder
+        |> JD.requiredAt [ "attributes", "category" ] JD.string
+        |> JD.requiredAt [ "attributes", "bedrooms" ] JD.int
+        |> JD.requiredAt [ "attributes", "image" ] JD.string
+        |> JD.requiredAt [ "attributes", "description" ] JD.string
 
 
-locationDecoder : Decoder Location
+locationDecoder : JD.Decoder Location
 locationDecoder =
-  D.map2 Location
-    (D.field "lat" D.float)
-    (D.field "lng" D.float)
+    JD.map2 Location
+        (JD.field "lat" JD.float)
+        (JD.field "lng" JD.float)

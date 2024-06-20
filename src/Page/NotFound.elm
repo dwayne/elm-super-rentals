@@ -1,10 +1,9 @@
 module Page.NotFound exposing (view)
 
+import Html as H
 
-import Html exposing (Html, text)
 
-
-view : List (Html msg)
+view : List (H.Html msg)
 view =
-  [ text "Not found"
-  ]
+    [ H.text "Not found"
+    ]

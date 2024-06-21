@@ -8,6 +8,7 @@ import Html.Attributes as HA
 import Html.Events as HE
 import Http
 import View.Jumbo
+import View.LinkTo
 import View.Rental
 
 
@@ -79,11 +80,10 @@ view { rentals, query } =
     [ View.Jumbo.view
         [ H.h2 [] [ H.text "Welcome to Super Rentals!" ]
         , H.p [] [ H.text "We hope you find exactly what you're looking for in a place to stay." ]
-        , H.a
-            [ HA.href <| Route.toString Route.About
-            , HA.class "button"
-            ]
-            [ H.text "About Us" ]
+        , View.LinkTo.view
+            { route = Route.About
+            , text = "About Us"
+            }
         ]
     , H.div [ HA.class "rentals" ]
         [ H.label []

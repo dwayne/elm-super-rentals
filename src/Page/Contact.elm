@@ -4,6 +4,7 @@ import Data.Route as Route
 import Html as H
 import Html.Attributes as HA
 import View.Jumbo
+import View.LinkTo
 
 
 view : List (H.Html msg)
@@ -26,10 +27,9 @@ view =
             , H.br [] []
             , H.a [ HA.href "mailto:superrentalsrep@emberjs.com" ] [ H.text "superrentalsrep@emberjs.com" ]
             ]
-        , H.a
-            [ HA.href <| Route.toString Route.About
-            , HA.class "button"
-            ]
-            [ H.text "About" ]
+        , View.LinkTo.view
+            { route = Route.About
+            , text = "About"
+            }
         ]
     ]

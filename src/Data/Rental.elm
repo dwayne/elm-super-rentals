@@ -19,13 +19,13 @@ type alias Rental =
 toKind : Rental -> String
 toKind { category } =
     case category of
+        "Apartment" ->
+            "Community"
+
         "Condo" ->
             "Community"
 
         "Townhouse" ->
-            "Community"
-
-        "Apartment" ->
             "Community"
 
         _ ->

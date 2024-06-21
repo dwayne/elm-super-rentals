@@ -35,7 +35,7 @@ init =
 
 type Msg
     = GotRentals (Result Http.Error (List Rental))
-    | ToggledSize Int Bool
+    | ToggledSize String Bool
     | ChangedQuery String
 
 
@@ -50,15 +50,12 @@ update msg model =
                 Err _ ->
                     model
 
-        --
-        -- TODO: Use the rental's ID instead of its position in the list.
-        --
-        ToggledSize i isLarge ->
+        ToggledSize id isLarge ->
             { model
                 | rentals =
-                    List.indexedMap
-                        (\j ( rental, current ) ->
-                            if i == j then
+                    List.map
+                        (\( rental, current ) ->
+                            if id == rental.id then
                                 ( rental, isLarge )
 
                             else
@@ -95,23 +92,25 @@ view { rentals, query } =
                 ]
                 []
             ]
-        , H.ul [ HA.class "results" ] <|
-            List.indexedMap viewRental (filterRentals query rentals)
+        , rentals
+            |> filter query
+            |> List.map viewRental
+            |> H.ul [ HA.class "results" ]
         ]
     ]
 
 
-viewRental : Int -> ( Rental, Bool ) -> H.Html Msg
-viewRental index ( rental, isLarge ) =
+viewRental : ( Rental, Bool ) -> H.Html Msg
+viewRental ( rental, isLarge ) =
     H.li []
         [ View.Rental.view
-            { isLarge = isLarge
-            , onToggleSize = ToggledSize index
-            , rental = rental
+            { rental = rental
+            , isLarge = isLarge
+            , onToggleSize = ToggledSize rental.id
             }
         ]
 
 
-filterRentals : String -> List ( Rental, Bool ) -> List ( Rental, Bool )
-filterRentals query =
-    List.filter (\( { title }, _ ) -> String.contains query title)
+filter : String -> List ( Rental, Bool ) -> List ( Rental, Bool )
+filter query =
+    List.filter (Tuple.first >> .title >> String.contains query)

@@ -56,11 +56,11 @@ fromUrl url =
     case Route.fromUrl url of
         Just Route.Home ->
             Page.Home.init
-                |> Tuple.mapBoth Home (Cmd.map NavigatedToHome)
+                |> Tuple.mapBoth Home (Cmd.map ChangedHomePage)
 
         Just (Route.Rental rentalId) ->
             Page.Rental.init rentalId
-                |> Tuple.mapBoth Rental (Cmd.map NavigatedToRental)
+                |> Tuple.mapBoth Rental (Cmd.map ChangedRentalPage)
 
         Just Route.About ->
             ( About
@@ -85,8 +85,8 @@ fromUrl url =
 type Msg
     = ClickedLink B.UrlRequest
     | ChangedUrl Url
-    | NavigatedToHome Page.Home.Msg
-    | NavigatedToRental Page.Rental.Msg
+    | ChangedHomePage Page.Home.Msg
+    | ChangedRentalPage Page.Rental.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -108,7 +108,7 @@ update msg model =
             fromUrl url
                 |> Tuple.mapFirst (Model url model.key)
 
-        NavigatedToHome homeMsg ->
+        ChangedHomePage homeMsg ->
             case model.page of
                 Home homeModel ->
                     ( { model | page = Home <| Page.Home.update homeMsg homeModel }
@@ -120,7 +120,7 @@ update msg model =
                     , Cmd.none
                     )
 
-        NavigatedToRental rentalMsg ->
+        ChangedRentalPage rentalMsg ->
             case model.page of
                 Rental rentalModel ->
                     ( { model | page = Rental <| Page.Rental.update rentalMsg rentalModel }
@@ -147,11 +147,11 @@ view { url, page } =
                 case page of
                     Home homeModel ->
                         Page.Home.view homeModel
-                            |> List.map (H.map NavigatedToHome)
+                            |> List.map (H.map ChangedHomePage)
 
                     Rental rentalModel ->
                         Page.Rental.view url rentalModel
-                            |> List.map (H.map NavigatedToRental)
+                            |> List.map (H.map ChangedRentalPage)
 
                     About ->
                         Page.About.view

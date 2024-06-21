@@ -58,7 +58,7 @@ update msg model =
 -- VIEW
 
 
-view : Url.Url -> Model -> List (H.Html Msg)
+view : Url -> Model -> List (H.Html Msg)
 view url { maybeRental } =
     case maybeRental of
         Just ( rental, isLarge ) ->

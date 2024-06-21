@@ -12,7 +12,12 @@ view =
     [ View.Jumbo.view
         [ H.h2 [] [ H.text "About Super Rentals" ]
         , H.p []
-            [ H.text "The Super Rentals website is a delightful project created to explore Ember. By building a property rental site, we can simultaneously imagine traveling AND building Ember applications."
+            [ [ "The Super Rentals website is a delightful project created to explore Ember."
+              , "By building a property rental site,"
+              , "we can simultaneously imagine traveling AND building Ember applications."
+              ]
+                |> String.join " "
+                |> H.text
             ]
         , View.LinkTo.view
             { route = Route.Contact

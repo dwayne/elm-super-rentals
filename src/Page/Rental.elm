@@ -76,9 +76,9 @@ view url { maybeRental } =
                     }
                 ]
             , View.RentalDetailed.view
-                { isLarge = isLarge
+                { rental = rental
+                , isLarge = isLarge
                 , onToggleSize = ToggledSize
-                , rental = rental
                 }
             ]
 

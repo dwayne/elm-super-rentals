@@ -26,6 +26,10 @@ view =
             , H.br [] []
             , H.a [ HA.href "mailto:superrentalsrep@emberjs.com" ] [ H.text "superrentalsrep@emberjs.com" ]
             ]
-        , H.a [ HA.href <| Route.toString Route.About, HA.class "button" ] [ H.text "About" ]
+        , H.a
+            [ HA.href <| Route.toString Route.About
+            , HA.class "button"
+            ]
+            [ H.text "About" ]
         ]
     ]

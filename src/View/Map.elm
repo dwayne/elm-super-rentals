@@ -4,31 +4,24 @@ import Html as H
 import Html.Attributes as HA
 
 
-type alias ViewOptions msg =
-    { lat : Float
+type alias ViewOptions =
+    { description : String
+    , isLarge : Bool
+    , lat : Float
     , lng : Float
     , zoom : Int
     , width : Int
     , height : Int
-    , attrs : List (H.Attribute msg)
     }
 
 
-view : ViewOptions msg -> H.Html msg
-view { lat, lng, zoom, width, height, attrs } =
-    let
-        preAttrs =
-            [ HA.alt <|
-                String.join ""
-                    [ "Map image at coordinates "
-                    , String.fromFloat lat
-                    , ","
-                    , String.fromFloat lng
-                    ]
-            ]
-
-        postAttrs =
-            [ HA.src <|
+view : ViewOptions -> H.Html msg
+view { description, isLarge, lat, lng, zoom, width, height } =
+    H.div [ HA.class "map" ]
+        [ H.img
+            [ HA.classList [ ( "large", isLarge ) ]
+            , HA.alt <| "A map of " ++ description
+            , HA.src <|
                 String.join ""
                     [ "https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/"
                     , String.fromFloat lng
@@ -46,9 +39,7 @@ view { lat, lng, zoom, width, height, attrs } =
             , HA.width width
             , HA.height height
             ]
-    in
-    H.div [ HA.class "map" ]
-        [ H.img (preAttrs ++ attrs ++ postAttrs) []
+            []
         ]
 
 

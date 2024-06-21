@@ -52,13 +52,12 @@ view { rental, isLarge, onToggleSize } =
                 ]
             ]
         , View.Map.view
-            { lat = rental.location.lat
+            { description = rental.title
+            , isLarge = False
+            , lat = rental.location.lat
             , lng = rental.location.lng
             , zoom = 9
             , width = 150
             , height = 150
-            , attrs =
-                [ HA.alt <| "A map of " ++ rental.title
-                ]
             }
         ]

@@ -30,51 +30,7 @@ rentalsDecoder =
 
 rentalDecoder : JD.Decoder Rental
 rentalDecoder =
-    JD.map
-        (\partialRental ->
-            { id = partialRental.id
-            , title = partialRental.title
-            , owner = partialRental.owner
-            , city = partialRental.city
-            , location = partialRental.location
-            , category = partialRental.category
-            , kind =
-                case partialRental.category of
-                    "Condo" ->
-                        "Community"
-
-                    "Townhouse" ->
-                        "Community"
-
-                    "Apartment" ->
-                        "Community"
-
-                    _ ->
-                        "Standalone"
-            , bedrooms = partialRental.bedrooms
-            , image = partialRental.image
-            , description = partialRental.description
-            }
-        )
-        partialRentalDecoder
-
-
-type alias PartialRental =
-    { id : String
-    , title : String
-    , owner : String
-    , city : String
-    , location : Location
-    , category : String
-    , bedrooms : Int
-    , image : String
-    , description : String
-    }
-
-
-partialRentalDecoder : JD.Decoder PartialRental
-partialRentalDecoder =
-    JD.succeed PartialRental
+    JD.succeed Rental
         |> JD.required "id" JD.string
         |> JD.requiredAt [ "attributes", "title" ] JD.string
         |> JD.requiredAt [ "attributes", "owner" ] JD.string

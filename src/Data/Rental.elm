@@ -1,4 +1,4 @@
-module Data.Rental exposing (Rental)
+module Data.Rental exposing (Rental, toKind)
 
 import Data.Location exposing (Location)
 
@@ -10,8 +10,23 @@ type alias Rental =
     , city : String
     , location : Location
     , category : String
-    , kind : String
     , bedrooms : Int
     , image : String
     , description : String
     }
+
+
+toKind : Rental -> String
+toKind { category } =
+    case category of
+        "Condo" ->
+            "Community"
+
+        "Townhouse" ->
+            "Community"
+
+        "Apartment" ->
+            "Community"
+
+        _ ->
+            "Standalone"

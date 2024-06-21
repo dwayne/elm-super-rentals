@@ -1,6 +1,6 @@
 module View.RentalDetailed exposing (ViewOptions, view)
 
-import Data.Rental exposing (Rental)
+import Data.Rental as Rental exposing (Rental)
 import Html as H
 import Html.Attributes as HA
 import View.Map
@@ -33,7 +33,7 @@ view { rental, isLarge, onToggleSize } =
             , H.div [ HA.class "detail type" ]
                 [ H.span [] [ H.text "Type:" ]
                 , H.text " "
-                , H.text <| rental.kind ++ " - " ++ rental.category
+                , H.text <| Rental.toKind rental ++ " - " ++ rental.category
                 ]
             , H.div [ HA.class "detail location" ]
                 [ H.span [] [ H.text "Location:" ]

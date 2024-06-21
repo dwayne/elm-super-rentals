@@ -7,7 +7,7 @@ import Http
 import Url exposing (Url)
 import View.Jumbo
 import View.RentalDetailed
-import View.ShareButton
+import View.TwitterButton
 
 
 
@@ -66,13 +66,9 @@ view url { maybeRental } =
                 [ H.h2 [] [ H.text rental.title ]
                 , H.p []
                     [ H.text <| "Nice find! This looks like a nice place to stay near " ++ rental.city ++ "." ]
-                , View.ShareButton.view
-                    { url = url
-                    , text = "Check out " ++ rental.title ++ " on Super Rentals!"
-                    , hashtags = "vacation,travel,authentic,blessed,superrentals"
-                    , via = "emberjs"
-                    , attrs = []
-                    , content = H.text "Share on Twitter"
+                , View.TwitterButton.view
+                    { description = rental.title
+                    , url = url
                     }
                 ]
             , View.RentalDetailed.view

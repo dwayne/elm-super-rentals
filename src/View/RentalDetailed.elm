@@ -8,24 +8,20 @@ import View.RentalImage
 
 
 type alias ViewOptions msg =
-    { isLarge : Bool
-    , onEnlargeClick : msg
-    , onShrinkClick : msg
-    , rental : Rental
+    { rental : Rental
+    , isLarge : Bool
+    , onToggleSize : Bool -> msg
     }
 
 
 view : ViewOptions msg -> H.Html msg
-view { isLarge, onEnlargeClick, onShrinkClick, rental } =
+view { rental, isLarge, onToggleSize } =
     H.article [ HA.class "rental detailed" ]
         [ View.RentalImage.view
-            { isLarge = isLarge
-            , onEnlargeClick = onEnlargeClick
-            , onShrinkClick = onShrinkClick
-            , attrs =
-                [ HA.src rental.image
-                , HA.alt <| "A picture of " ++ rental.title
-                ]
+            { title = rental.title
+            , image = rental.image
+            , isLarge = isLarge
+            , onToggleSize = onToggleSize
             }
         , H.div [ HA.class "details" ]
             [ H.h3 [] [ H.text <| "About " ++ rental.title ]

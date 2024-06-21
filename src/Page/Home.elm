@@ -34,7 +34,7 @@ init =
 
 type Msg
     = GotRentals (Result Http.Error (List Rental))
-    | ClickedToggleSize Int Bool
+    | ToggledSize Int Bool
     | ChangedQuery String
 
 
@@ -52,7 +52,7 @@ update msg model =
         --
         -- TODO: Use the rental's ID instead of its position in the list.
         --
-        ClickedToggleSize i isLarge ->
+        ToggledSize i isLarge ->
             { model
                 | rentals =
                     List.indexedMap
@@ -105,14 +105,8 @@ viewRental : Int -> ( Rental, Bool ) -> H.Html Msg
 viewRental index ( rental, isLarge ) =
     H.li []
         [ View.Rental.view
-            --
-            -- TODO: Improve options API.
-            --
-            -- Would `onClick : Bool -> msg` be better?
-            --
             { isLarge = isLarge
-            , onEnlargeClick = ClickedToggleSize index True
-            , onShrinkClick = ClickedToggleSize index False
+            , onToggleSize = ToggledSize index
             , rental = rental
             }
         ]

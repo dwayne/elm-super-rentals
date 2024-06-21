@@ -32,7 +32,7 @@ init rentalId =
 
 type Msg
     = GotRental (Result Http.Error Rental)
-    | ClickedToggleSize Bool
+    | ToggledSize Bool
 
 
 update : Msg -> Model -> Model
@@ -46,7 +46,7 @@ update msg model =
                 Err e ->
                     model
 
-        ClickedToggleSize isLarge ->
+        ToggledSize isLarge ->
             { model
                 | maybeRental =
                     model.maybeRental
@@ -77,8 +77,7 @@ view url { maybeRental } =
                 ]
             , View.RentalDetailed.view
                 { isLarge = isLarge
-                , onEnlargeClick = ClickedToggleSize True
-                , onShrinkClick = ClickedToggleSize False
+                , onToggleSize = ToggledSize
                 , rental = rental
                 }
             ]

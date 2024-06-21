@@ -6,33 +6,35 @@ import Html.Events as HE
 
 
 type alias ViewOptions msg =
-    { isLarge : Bool
-    , onEnlargeClick : msg
-    , onShrinkClick : msg
-    , attrs : List (H.Attribute msg)
+    { title : String
+    , image : String
+    , isLarge : Bool
+    , onToggleSize : Bool -> msg
     }
 
 
 view : ViewOptions msg -> H.Html msg
-view { isLarge, onEnlargeClick, onShrinkClick, attrs } =
+view { title, image, isLarge, onToggleSize } =
     let
-        ( class, onClick, text ) =
+        ( class, text ) =
             if isLarge then
                 ( "image large"
-                , onShrinkClick
                 , "Smaller"
                 )
 
             else
                 ( "image"
-                , onEnlargeClick
                 , "Larger"
                 )
     in
     H.button
         [ HA.class class
-        , HE.onClick onClick
+        , HE.onClick <| onToggleSize <| not isLarge
         ]
-        [ H.img attrs []
+        [ H.img
+            [ HA.src image
+            , HA.alt <| "A picture of " ++ title
+            ]
+            []
         , H.small [] [ H.text <| "View " ++ text ]
         ]

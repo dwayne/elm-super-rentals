@@ -30,5 +30,5 @@ shareUrl description url =
         [ UB.string "url" <| Url.toString url
         , UB.string "text" <| "Check out " ++ description ++ " on Super Rentals!"
         , UB.string "hashtags" "vacation,travel,authentic,blessed,superrentals"
-        , UB.string "via" "emberjs"
+        , UB.string "via" "elm"
         ]

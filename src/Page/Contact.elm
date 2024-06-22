@@ -25,7 +25,7 @@ view =
                 ]
             , H.a [ HA.href "tel:503.555.1212" ] [ H.text "+1 (503) 555-1212" ]
             , H.br [] []
-            , H.a [ HA.href "mailto:superrentalsrep@emberjs.com" ] [ H.text "superrentalsrep@emberjs.com" ]
+            , H.a [ HA.href "mailto:superrentalsrep@elm-lang.org" ] [ H.text "superrentalsrep@elm-lang.org" ]
             ]
         , View.LinkTo.view
             { route = Route.About

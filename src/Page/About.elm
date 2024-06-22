@@ -12,9 +12,9 @@ view =
     [ View.Jumbo.view
         [ H.h2 [] [ H.text "About Super Rentals" ]
         , H.p []
-            [ [ "The Super Rentals website is a delightful project created to explore Ember."
+            [ [ "The Super Rentals website is a delightful project created to explore Elm."
               , "By building a property rental site,"
-              , "we can simultaneously imagine traveling AND building Ember applications."
+              , "we can simultaneously imagine traveling AND building Elm applications."
               ]
                 |> String.join " "
                 |> H.text

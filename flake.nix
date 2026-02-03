@@ -32,6 +32,15 @@
           shellHook = ''
             export PROJECT_ROOT="$PWD"
             export PS1="($name)\n$PS1"
+
+            f () {
+              elm-format "$PROJECT_ROOT/src" "''${@:---yes}"
+            }
+
+            echo "Elm development environment loaded"
+            echo ""
+            echo "Type 'f' to run elm-format"
+            echo ""
           '';
         };
 

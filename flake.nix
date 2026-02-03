@@ -15,8 +15,26 @@
 
         build = pkgs.callPackage ./nix/build.nix { inherit buildElmApplication; };
 
-        dev = build { name = "dev"; };
-        prod = build { name = "prod"; enableDebugger = false; };
+        dev = build { name = "elm-super-rentals-dev"; };
+        prod = build { name = "elm-super-rentals-prod"; enableDebugger = false; };
+
+        serve = pkgs.callPackage ./nix/serve.nix {};
+
+        serveDev = serve {
+          name = "serve-elm-super-rentals-dev";
+          root = dev;
+        };
+
+        serveProd = serve {
+          name = "serve-elm-super-rentals-prod";
+          root = prod;
+        };
+
+        mkApp = { drv, description }: {
+          type = "app";
+          program = "${drv}";
+          meta.description = description;
+        };
       in
       {
         devShells.default = pkgs.mkShell {
@@ -49,8 +67,22 @@
           default = dev;
         };
 
+        apps = {
+          default = self.apps.${system}.dev;
+
+          dev = mkApp {
+            drv = serveDev;
+            description = "Serve the development version of the Super Rentals web application";
+          };
+
+          prod = mkApp {
+            drv = serveProd;
+            description = "Serve the production version of the Super Rentals web application";
+          };
+        };
+
         checks = {
-          inherit dev prod;
+          inherit dev prod serveDev serveProd;
         };
       }
     );

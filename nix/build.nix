@@ -23,7 +23,7 @@ let
       };
 
   js = buildElmApplication ({
-    name = "elm-super-rentals-js";
+    name = "${name}-js";
     src = fs.toSource {
       root = ../.;
       fileset = fs.unions [
